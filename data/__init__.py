@@ -12,6 +12,9 @@ class Data():
         self.filename = filename
         self.ntreads = nthreads
         self.tmpfilename = "/var/tmp/soscleanAI_dir"
+        self.manifest_location = (f"{self.tmpfilename}"
+                                  "/sos_reports/manifest.json")
+        self.manifest = []
 
     def extract_archive(self):
         Path(self.tmpfilename).mkdir(exist_ok=True)
@@ -20,7 +23,13 @@ class Data():
             arc.extractall(self.tmpfilename)
 
     def read_manifest(self):
-        pass
+        with open(self.manifest_location, 'r', encoding='utf-8') as mfile:
+            # TODO: The manifest is actually a json, we should probably
+            # use native json capabilities
+            for line in mfile:
+                if "filepath" in line:
+                    if line != "null":
+                        self.manifest.append(line.split(": ")[1])
 
     def distribute_files_per_thread(self):
         pass
