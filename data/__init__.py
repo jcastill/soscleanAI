@@ -44,7 +44,7 @@ class Data():
         # thread3: 51-75
         # thread4: 76-100
 
-        for i in range (0, numfiles, step):
+        for i in range(0, numfiles, step):
             start_range = i
             self.distributed_manifest[i] = self.manifest[start_range:step]
 
