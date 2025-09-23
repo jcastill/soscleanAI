@@ -1,7 +1,7 @@
 [project]
 name = "soscleanai"
 version = "0.1.0"
-description = "Add your description here"
+description = "Project to experiment using AI to clean up sos reports"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
