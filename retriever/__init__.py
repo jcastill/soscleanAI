@@ -9,11 +9,13 @@ except ImportError:
     print("Warning: pymilvus is not installed."
           "Vector database features disabled.")
 
+from transformer import Transformer
 
 class Retriever:
-    def __init__(self, config):
+    def __init__(self, config, transf : Transformer):
         self.config = config
         self.collection = None
+        self.transformer = transf
 
     def setup_milvus(self):
         if not MILVUS_AVAILABLE:
@@ -62,4 +64,30 @@ class Retriever:
             }
             self.collection.create_index("embedding", index_params)
             self.collection.load()
+
+    def store_example(self, description: str,
+                      secret_data: Dict[str, Any]) -> bool:
+        if not self.milvus_available:
+            print("Milvus db was not available, so we cannot store the sample.")
+            return False
+        
+        try:
+            secret_str = secret_data
+            embedding = self.transf.get_text_embedding(description)
+
+            # Insert data
+            entities = [
+                [description],
+                [secret_str],
+                [embedding]
+            ]
+            self.collection.insert(entities)
+            self.collection.flush()
+
+            print("The example was stored in the Milvus database:\n"
+                  f"--> {description[:100]}")
+            return True
+        except Exception as e:
+            print(f"An error occurred while trying to store example: {e}")
+            return False
 
