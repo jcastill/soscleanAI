@@ -67,7 +67,7 @@ class Retriever:
 
     def store_example(self, description: str,
                       secret_data: Dict[str, Any]) -> bool:
-        if not self.milvus_available:
+        if not MILVUS_AVAILABLE:
             print("Milvus db was not available, "
                   "so we cannot store the sample.")
             return False
