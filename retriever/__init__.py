@@ -68,12 +68,13 @@ class Retriever:
     def store_example(self, description: str,
                       secret_data: Dict[str, Any]) -> bool:
         if not self.milvus_available:
-            print("Milvus db was not available, so we cannot store the sample.")
+            print("Milvus db was not available, "
+                  "so we cannot store the sample.")
             return False
         
         try:
             secret_str = secret_data
-            embedding = self.transf.get_text_embedding(description)
+            embedding = self.transformer.get_text_embedding(description)
 
             # Insert data
             entities = [
