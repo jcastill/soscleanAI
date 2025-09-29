@@ -9,10 +9,12 @@ except ImportError:
     print("Warning: pymilvus is not installed."
           "Vector database features disabled.")
 
+from typing import Dict, Any
 from transformer import Transformer
 
+
 class Retriever:
-    def __init__(self, config, transf : Transformer):
+    def __init__(self, config, transf: Transformer):
         self.config = config
         self.collection = None
         self.transformer = transf
