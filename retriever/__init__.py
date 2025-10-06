@@ -1,3 +1,4 @@
+import logging
 try:
     from pymilvus import (
         connections, Collection, CollectionSchema,
@@ -6,8 +7,8 @@ try:
     MILVUS_AVAILABLE = True
 except ImportError:
     MILVUS_AVAILABLE = False
-    print("Warning: pymilvus is not installed."
-          "Vector database features disabled.")
+    logging.error("Warning: pymilvus is not installed."
+                  "Vector database features disabled.")
 
 from typing import Dict, Any
 from transformer import Transformer
@@ -50,10 +51,10 @@ class Retriever:
         collection_name = self.config.milvus_collection
         if utility.has_collection(collection_name):
             self.collection = Collection(collection_name)
-            print(f"Using existing Milvus collection: {collection_name}")
+            logging.info(f"Using existing Milvus collection: {collection_name}")
         else:
             self.collection = Collection(collection_name, schema)
-            print(f"Created new Milvus collection: {collection_name}")
+            logging.info(f"Created new Milvus collection: {collection_name}")
 
         # Lets create the index now
         try:
@@ -70,8 +71,8 @@ class Retriever:
     def store_example(self, description: str,
                       secret_data: Dict[str, Any]) -> bool:
         if not MILVUS_AVAILABLE:
-            print("Milvus db was not available, "
-                  "so we cannot store the sample.")
+            logging.error("Milvus db was not available, "
+                          "so we cannot store the sample.")
             return False
         
         try:
@@ -87,10 +88,11 @@ class Retriever:
             self.collection.insert(entities)
             self.collection.flush()
 
-            print("The example was stored in the Milvus database:\n"
+            logging.info("The example was stored in the Milvus database:\n"
                   f"--> {description[:100]}")
             return True
         except Exception as e:
-            print(f"An error occurred while trying to store example: {e}")
+            logging.error("An error occurred while "
+                          "trying to store example: {e}")
             return False
 
