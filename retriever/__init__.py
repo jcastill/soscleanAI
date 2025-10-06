@@ -74,7 +74,7 @@ class Retriever:
             logging.error("Milvus db was not available, "
                           "so we cannot store the sample.")
             return False
-        
+
         try:
             secret_str = secret_data
             embedding = self.transformer.get_text_embedding(description)
@@ -96,6 +96,32 @@ class Retriever:
                           f"trying to store example: {e}")
             return False
 
+    def _get_text_embedding(self, text: str) -> List[float]:
+        """ Get embedding for text"""
+        try:
+            response = self.client.embeddings(
+                model="nomic-embed-text",
+                prompt=text
+            )
+            return response['embedding']
+        except Exception:
+            # Create a simple hash-based embedding
+            import hashlib
+            hash_obj = hashlib.sha256(text.encode())
+            has_hex = hash_obj.hexdigest()
+
+            # Convert hash to a 384-dim vector
+            embedding = []
+            # Because SHA256 gives us 64 hex chars, each pair gives us
+            # one float. We need 384 dimensions, so we'll cycle through
+            # the hash
+            for i in range(384):
+                char_index = (i * 2) % len(has_hex)
+                val = int(hash_hex[car_index:char_index+2], 16) / 255.0
+                embedding.append(val)
+
+            return embedding
+
     def search_similar(self, text: str) -> List[Tuple[str, Dict[str, Any]]]:
         """
         Search for similar samples in the database.
@@ -108,10 +134,10 @@ class Retriever:
         """
         if not self.milvus_available:
             return []
-        
+    
         try:
             embedding = self._get_text_embedding(text)
-            search_params = {"metric_type: "L2",
+            search_params = {"metric_type": "L2",
                             "params": {"nprobe", 10}
                             }
             results = self.collection.search(
