@@ -116,7 +116,7 @@ class Retriever:
             # one float. We need 384 dimensions, so we'll cycle through
             # the hash
             for i in range(384):
-                char_index = (i * 2) % len(has_hex)
+                char_index = (i * 2) % len(hash_hex)
                 val = int(hash_hex[char_index:char_index+2], 16) / 255.0
                 embedding.append(val)
 
