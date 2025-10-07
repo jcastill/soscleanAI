@@ -108,7 +108,7 @@ class Retriever:
             # Create a simple hash-based embedding
             import hashlib
             hash_obj = hashlib.sha256(text.encode())
-            has_hex = hash_obj.hexdigest()
+            hash_hex = hash_obj.hexdigest()
 
             # Convert hash to a 384-dim vector
             embedding = []
@@ -117,7 +117,7 @@ class Retriever:
             # the hash
             for i in range(384):
                 char_index = (i * 2) % len(has_hex)
-                val = int(hash_hex[car_index:char_index+2], 16) / 255.0
+                val = int(hash_hex[char_index:char_index+2], 16) / 255.0
                 embedding.append(val)
 
             return embedding
